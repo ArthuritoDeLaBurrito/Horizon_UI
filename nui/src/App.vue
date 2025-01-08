@@ -1,7 +1,11 @@
 <template>
   <div id="app">
-    <LoadingScreen v-if="showLoadingScreen" />
-    <component :is="currentPage" :pageData="currentPageData" />
+
+    <!-- Ajout du HUD -->
+    <Hud />
+
+    <!--<LoadingScreen v-if="showLoadingScreen" />-->
+    <!--<component :is="currentPage" :pageData="currentPageData" />-->
 
      <!-- Conteneur des notifications -->
      <div class="notification-container">
@@ -26,20 +30,22 @@
 <script setup>
   import { ref, reactive, onMounted, onUnmounted } from 'vue';
 
-  import LoadingScreen from './components/LoadingScreen.vue';  // Import du composant LoadingScreen
-  import Notification from './components/Notification.vue'; // Import du composant Notification
-
   // État global pour le chargement
   const showLoadingScreen = ref(true); // True par défaut pour afficher l'écran de chargement
 
   // Import des composants des pages
   import Home from './views/Home.vue';
   import Example from './views/Example.vue';
+  import LoadingScreen from './components/LoadingScreen.vue';
+  import Notification from './components/Notification.vue';
+  import Hud from './components/Hud.vue';
 
   // Pages disponibles
   const pages = {
     Home,
     Example,
+    LoadingScreen,
+    Notification
   };
 
   // Notifications
@@ -121,9 +127,12 @@
     let progress = 0;
     const interval = setInterval(() => {
       progress += 4;
-      if (progress >= 100) {
-        clearInterval(interval);
-        showLoadingScreen.value = false; // Masquer le loadingscreen une fois terminé
+      if (progress >= 200) {
+        if (showLoadingScreen.value) {
+          console.log("jesuisencorela")
+          clearInterval(interval);
+          showLoadingScreen.value = false; // Masquer le loadingscreen une fois terminé 
+        }
       }
     }, 500);
 

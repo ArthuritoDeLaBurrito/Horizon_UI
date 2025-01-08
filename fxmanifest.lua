@@ -5,6 +5,9 @@ lua54      'yes'
 author      'Horizon'
 description 'UI From Horizon'
 
+--loadscreen 'nui/dist/nui.html'
+--loadscreen_manual_shutdown "yes"
+
 --
 -- Client
 --
@@ -25,12 +28,10 @@ files {
     'nui/dist/app.css',
 }
 
-loadscreen 'nui/dist/nui.html'
-loadscreen_manual_shutdown "yes"
-
 exports {
     'openUI',
     'sendDataToPage',
     'sendNotification',
-    'ShutdownLoadingScreen'
+    'ShutdownLoadingScreenUI',
+    'sendNUI'
 }
