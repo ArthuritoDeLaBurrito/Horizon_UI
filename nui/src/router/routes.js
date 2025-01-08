@@ -1,5 +1,5 @@
-import Home    from '../pages/Home.vue';
-import Example from '../pages/Example.vue';
+import Home    from '../views/Home.vue';
+import Example from '../views/Example.vue';
 
 export const routes = [
     {
@@ -8,8 +8,8 @@ export const routes = [
         component: Home,
     },
     {
-        path: '/example',
+        path: '/Example', 
         name: 'Example',
-        component: Example,
+        component: Example, 
     },
 ];

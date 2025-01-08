@@ -15,7 +15,7 @@ export class NuiProxy {
             return data.data || {};
         } catch(err) {
             return false;
-        }
+        } 
     }
 }
 

@@ -2,15 +2,15 @@ fx_version 'cerulean'
 games      { 'gta5' }
 lua54      'yes'
 
-author      'CharlesHacks#9999 <charles@charleshacks.com>'
-description 'Vue + Tailwind Boilerplate for FiveM'
+author      'Horizon'
+description 'UI From Horizon'
 
 --
 -- Client
 --
 
 client_scripts {
-    'client/client.lua',
+    'client/*.lua',
 }
 
 --
@@ -23,4 +23,14 @@ files {
     'nui/dist/nui.html',
     'nui/dist/app.js',
     'nui/dist/app.css',
+}
+
+loadscreen 'nui/dist/nui.html'
+loadscreen_manual_shutdown "yes"
+
+exports {
+    'openUI',
+    'sendDataToPage',
+    'sendNotification',
+    'ShutdownLoadingScreen'
 }
