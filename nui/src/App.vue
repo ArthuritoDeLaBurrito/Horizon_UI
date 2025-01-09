@@ -3,7 +3,9 @@
     <Hud />
     <InfoMessage />
     <Notification />
-
+    <AdvancedInventory />
+    <Speedometer />
+    <infoStaff />
     <!--<LoadingScreen v-if="showLoadingScreen" />-->
     <!--<component :is="currentPage" :pageData="currentPageData" />-->
 
@@ -23,13 +25,19 @@
   import Notification from './components/Notification.vue';
   import Hud from './components/Hud.vue';
   import InfoMessage from './components/InfoMessage.vue';
+  import AdvancedInventory from './components/AdvancedInventory.vue';
+  import Speedometer from './components/Speedometer.vue';
+  import infoStaff from './components/infoStaff.vue';
 
   // Pages disponibles
   const pages = {
     Home,
     Example,
     LoadingScreen,
-    Notification
+    Notification,
+    AdvancedInventory,
+    Speedometer,
+    infoStaff
   };
 
   // Notifications

@@ -5,9 +5,16 @@
       v-for="(notification, index) in activeNotifications"
       :key="index"
       class="notification"
-      :style="{ bottom: `${200 + index * 70}px` }"
+      :style="{ bottom: `${220 + index * 120}px` }"
     >
-      <p>{{ notification.message }}</p>
+      <!-- Logo -->
+      <img v-if="notification.logo" :src="notification.logo" alt="Notification Logo" class="logo" />
+      <!-- Contenu texte -->
+      <div class="notification-content">
+        <h4 class="title">{{ notification.title }}</h4>
+        <p class="subtitle">{{ notification.subtitle }}</p>
+        <p class="description">{{ notification.description }}</p>
+      </div>
       <!-- Pastille pour le nombre d'occurrences -->
       <div v-if="notification.count > 1" class="badge">
         x{{ notification.count }}
@@ -32,14 +39,20 @@ const queue = ref([]); // File d'attente des notifications
 window.addEventListener('message', (event) => {
   if (event.data.type === 'showNotification') {
     const newNotification = {
-      message: event.data.message,
+      title: event.data.title || "Titre par défaut",
+      subtitle: event.data.subtitle || "",
+      description: event.data.description || "",
+      logo: event.data.logo || null, // Chemin ou URL du logo
       duration: event.data.duration || 3000, // Durée par défaut : 3 secondes
       count: 1, // Compteur d'occurrences
     };
 
-    // Vérifie si une notification avec le même message existe déjà
+    // Vérifie si une notification avec le même contenu existe déjà
     const existingNotification = activeNotifications.value.find(
-      (notif) => notif.message === newNotification.message
+      (notif) =>
+        notif.title === newNotification.title &&
+        notif.subtitle === newNotification.subtitle &&
+        notif.description === newNotification.description
     );
 
     if (existingNotification) {
@@ -78,21 +91,50 @@ function displayNotification(notification) {
 .notification {
   position: fixed; /* Permet un positionnement relatif à l'écran */
   left: 20px; /* Position fixe à gauche */
-  background: rgba(0, 0, 0, 0.7); /* Couleur de fond semi-transparente */
+  background: rgba(0, 0, 0, 0.267); /* Couleur de fond semi-transparente */
   color: white;
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 14px;
   z-index: 1000;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
   width: 300px; /* Largeur fixe pour un alignement cohérent */
   animation: fade-in-out 3s ease forwards;
   transition: bottom 0.3s ease-in-out; /* Transition fluide pour les déplacements */
+  display: flex;
+  align-items: flex-start;
+  gap: 10px; /* Espacement entre le logo et le contenu */
 }
 
-/* Décalage dynamique en fonction de la file */
-.notification {
-  bottom: 20px; /* Position initiale */
+/* Logo de la notification */
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Contenu texte */
+.notification-content {
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #b3b3b3; /* Couleur gris clair pour le sous-titre */
+}
+
+.description {
+  margin: 5px 0 0 0;
+  font-size: 12px;
+  color: #e0e0e0; /* Couleur gris clair pour la description */
 }
 
 /* Pastille pour le nombre d'occurrences */
@@ -116,7 +158,7 @@ function displayNotification(notification) {
 /* Indicateur de file d'attente */
 .queue-indicator {
   position: fixed;
-  bottom: calc(20px + 220px); /* Ajusté pour être au-dessus des notifications */
+  bottom: calc(20px + 360px); /* Ajusté pour être au-dessus des notifications */
   left: 20px;
   background: rgba(255, 255, 255, 0.1);
   color: white;
@@ -127,7 +169,6 @@ function displayNotification(notification) {
   text-align: center;
 }
 
-/* Animation de fade-in et fade-out */
 @keyframes fade-in-out {
   0% {
     opacity: 0;

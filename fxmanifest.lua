@@ -26,12 +26,5 @@ files {
     'nui/dist/nui.html',
     'nui/dist/app.js',
     'nui/dist/app.css',
-}
-
-exports {
-    'openUI',
-    'sendDataToPage',
-    'sendNotification',
-    'ShutdownLoadingScreenUI',
-    'sendNUI'
+    'nui/src/assets/**/*.png',
 }
