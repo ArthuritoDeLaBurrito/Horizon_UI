@@ -1,28 +1,11 @@
 <template>
   <div id="app">
-
-    <!-- Ajout du HUD -->
     <Hud />
+    <InfoMessage />
+    <Notification />
 
     <!--<LoadingScreen v-if="showLoadingScreen" />-->
     <!--<component :is="currentPage" :pageData="currentPageData" />-->
-
-     <!-- Conteneur des notifications -->
-     <div class="notification-container">
-      <Notification
-        v-for="(notification, index) in activeNotifications"
-        :key="notification.id"
-        :message="notification.message"
-        :type="notification.type"
-        :duration="notification.duration"
-        @close="removeNotification(index)"
-      />
-
-      <!-- Indicateur de file d'attente -->
-      <div v-if="notificationQueue.length > 0" class="queue-indicator">
-        +{{ notificationQueue.length }} en attente
-      </div>
-    </div>
 
   </div>
 </template>
@@ -39,6 +22,7 @@
   import LoadingScreen from './components/LoadingScreen.vue';
   import Notification from './components/Notification.vue';
   import Hud from './components/Hud.vue';
+  import InfoMessage from './components/InfoMessage.vue';
 
   // Pages disponibles
   const pages = {
