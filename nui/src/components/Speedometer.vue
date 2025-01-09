@@ -1,5 +1,5 @@
 <template>
-    <div v-if="visible" class="speedometer" @click="toggleInfo">
+    <div v-if ="visible" class="speedometer" @click="toggleInfo">
       <!-- Barre de carburant circulaire -->
       <svg class="fuel-bar" width="200" height="200">
         <circle
@@ -16,7 +16,7 @@
   
       
       <!-- Affichage de la vitesse -->
-      <div class="speedometer-circle">
+      <div class="speedometer-circle" :class="{ 'emergency-mode': isEmergency }">
         <p class="speed-value">{{ speed }}</p>
         <p class="speed-unit">KM/H</p>
       </div>
@@ -29,7 +29,9 @@
       <!-- Bulle d'Informations -->                 
       <div v-if = "showInfo" class="info-bubble">
         <h3>Informations</h3>
-        <p> → Carburant: {{ fuel }}%</p>
+        <p><strong>Vitesse :</strong> {{ speed }} KM/H</p>
+        <p><strong>Rapport :</strong> {{ gear }}</p>
+        <p><strong>Carburant :</strong> {{ fuel }}%</p>
       </div>
     </div>
   </template>
@@ -42,7 +44,8 @@
     const speed = ref(0); // Vitesse actuelle
     const gear = ref("N"); // Rapport actuel (P, R, N, D ou 1-6)
     const fuel = ref(100); // Niveau de carburant (%)
-    
+    const isEmergency = ref(false); // Indique si le véhicule est un véhicule d'urgence
+
     // Calcul dynamique pour la barre circulaire
     const circleRadius = 90; // Rayon du cercle
     const circleCircumference = 2 * Math.PI * circleRadius; // Circonférence complète
@@ -56,10 +59,12 @@
     // Écoute des messages NUI pour mettre à jour le speedometer
     window.addEventListener("message", (event) => {
         if (event.data.type === "updateSpeedometer") {
+            console.log(event.data.isEmergency)
             speed.value = event.data.speed || 0;
             gear.value = event.data.gear || "N";
             fuel.value = event.data.fuel || 0; // Assure que le fuel est valide
-        
+            isEmergency.value = event.data.isEmergency || false; // Met à jour si c'est un véhicule d'urgence
+
             // Rendre visible le speedometer uniquement si le joueur est dans un véhicule
             visible.value = true;
             if (speed.value === 0 && gear.value === "N") {
@@ -79,6 +84,27 @@
 </script>
   
 <style scoped>
+    /* Mode urgence (animation rouge et bleu) */
+    .emergency-mode {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+        animation: emergency 0.5s infinite alternate; /* Alterne entre bleu et rouge */
+    }
+
+    @keyframes emergency {
+    0% {
+        background: rgba(0, 0, 255, 0.27); /* Bleu */
+    }
+    100% {
+        background: rgba(255, 0, 0, 0.27); /* Rouge */
+    }
+    }
+
   /* Conteneur principal du speedometer */
     .speedometer {
         position: fixed;
@@ -91,7 +117,6 @@
         justify-content: center;
         align-items: center;
     }
-
     /* Barre de carburant circulaire */
     .fuel-bar {
         position: absolute;

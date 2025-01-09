@@ -44,24 +44,3 @@ function updateHud(data)
     })
 end
 exports('updateHud', updateHud)
-
--- Simule la faim et la soif
-local hunger = 100
-local thirst = 100
-
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(5000) -- Mise à jour toutes les 5 secondes
-
-        -- Récupère la vie du joueur
-        local playerPed = PlayerPedId()
-        local health = GetEntityHealth(playerPed) - 100 -- La vie commence à 100 par défaut
-
-        -- Réduction progressive de la faim et de la soif
-        hunger = math.max(0, hunger - 1) -- Diminue de 1 jusqu'à un minimum de 0
-        thirst = math.max(0, thirst - 1) -- Diminue de 1 jusqu'à un minimum de 0
-
-        -- Met à jour le HUD
-        updateHud(health, hunger, thirst)
-    end
-end)

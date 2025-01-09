@@ -69,3 +69,21 @@ RegisterCommand("testinventory", function()
     })
     SetNuiFocus(inventoryVisible, inventoryVisible)
 end, false)
+
+
+RegisterNUICallback("menuOptions", function(data, cb)
+    print("Liste complète des options reçue :")
+    for _, option in ipairs(data.data) do
+        print(string.format("Option: %s, Checked: %s", option.label, tostring(option.checked)))
+        -- Logique basée sur chaque option
+        if option.value == "weather" and option.checked then
+            print("Météo activée.")
+            -- Exemple : Active une logique liée à la météo
+        elseif option.value == "traffic" and not option.checked then
+            print("Trafic désactivé.")
+            -- Exemple : Désactive une logique liée au trafic
+        end
+    end
+
+    cb("ok") -- Confirme que l'action est terminée
+end)

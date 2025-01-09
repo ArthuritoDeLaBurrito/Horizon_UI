@@ -1,6 +1,6 @@
 <template>
     <div v-if="visible" class="info-container" @click="toggleInfo">
-      <p class="info_title">Mode Administration</p>
+      <p class="info_title">Mode Marqueurs</p>
       <transition name="slide">
       <div v-if="showInfo">
         <br />

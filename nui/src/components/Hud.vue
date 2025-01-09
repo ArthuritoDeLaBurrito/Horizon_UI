@@ -40,26 +40,26 @@
     <div v-if="visible" class="JOPhud-container">
       <!-- Barre de vie -->
       <div class="JOPhud-element">
-        <p>Métier</p>
-        <p> - {{ job }}</p>
+        <p style="font-weight: bold;">Métier</p>
+        <p> → {{ job }}</p>
       </div>
 
       <!-- Barre de faim -->
       <div class="JOPhud-element">
-        <p>Illégal</p>
-        <p> - {{ gang }}</p>
+        <p style="font-weight: bold;">Illégal</p>
+        <p> → {{ gang }}</p>
       </div>
 
       <!-- Nom Prénom du Joueur -->
       <div class="JOPhud-element">
-        <p>Nom / Prénom</p>
-        <p> - {{ pname }}</p>
+        <p style="font-weight: bold;">Nom / Prénom</p>
+        <p> → {{ pname }}</p>
       </div>
 
        <!-- ID / ID Unique du Joueur -->
       <div class="JOPhud-element">
-        <p>ID / ID Unique</p>
-        <p> - {{ pid }} / {{ pidu }}</p>     
+        <p style="font-weight: bold;">ID / ID Unique</p>
+        <p> → {{ pid }} / {{ pidu }}</p>     
       </div>
     </div>
     
