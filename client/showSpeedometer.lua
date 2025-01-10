@@ -1,3 +1,4 @@
+---@diagnostic disable: lowercase-global
 function updateSpeedometerData(_gear, _speed, _fuel, _isEmergency)
     SendNUIMessage({
         type = "updateSpeedometer",

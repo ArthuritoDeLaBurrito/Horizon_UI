@@ -6,6 +6,7 @@
     <AdvancedInventory />
     <Speedometer />
     <infoStaff />
+    <Menu />
     <!--<LoadingScreen v-if="showLoadingScreen" />-->
     <!--<component :is="currentPage" :pageData="currentPageData" />-->
 
@@ -28,6 +29,7 @@
   import AdvancedInventory from './components/AdvancedInventory.vue';
   import Speedometer from './components/Speedometer.vue';
   import infoStaff from './components/infoStaff.vue';
+  import Menu from './components/Menu.vue';
 
   // Pages disponibles
   const pages = {
@@ -37,7 +39,8 @@
     Notification,
     AdvancedInventory,
     Speedometer,
-    infoStaff
+    infoStaff,
+    Menu,
   };
 
   // Notifications

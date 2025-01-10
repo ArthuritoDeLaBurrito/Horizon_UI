@@ -1,6 +1,7 @@
 local showHud = false -- État du HUD
 
 Citizen.CreateThread(function()
+    SetNuiFocus(true, true) 
     while true do
         Citizen.Wait(0)
         -- Vérifie si la touche TAB est pressée
