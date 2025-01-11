@@ -48,22 +48,7 @@
   // Variables réactives
   const tempData = ref([]);
   const btnIndex = ref(0);
-  const menuData = ref({
-  style: {
-  },
-  title: "Menu Principal",
-  btn: [
-    { name: "Option 1", event: "event1", desc: "Description de l'option 1" },
-    { name: "Option 2", event: "event2" },
-    { name: "Option 3", event: "event3" },
-    { name: "Option 4", event: "event3" },
-    { name: "Option 5", event: "event3" },
-    { name: "Option 6", event: "event3" },
-    { name: "Option 7", event: "event3" },
-    { name: "Option 8", event: "event3" },
-    { name: "Option 9", event: "event3" },
-  ],
-  });
+  const menuData = ref(null);
   const startIndex = ref(0); // Index de départ des éléments visibles
   const maxVisible = 7; // Nombre maximum d'éléments visibles en même temps
 
@@ -151,6 +136,7 @@
   }
 
   function closeAll() {
+    console.log("Fermer tous les menus");
     menuData.value = null;
     tempData.value = [];
     btnIndex.value = 0;
@@ -192,7 +178,8 @@
     if (event.data.type === 'createMenu') {
       console.log("Créer un menu :", event.data.menu);
       createMenu(event.data.menu, event.data.dynamic);
-    } else if (event.data.type === 'keyPress') {
+    } else if (event.data.type === 'keyPress' && menuData.value !== null) {
+      
       if (event.data.key === "ArrowDown") {
         navigateDown()};
       if (event.data.key === "ArrowUp") {

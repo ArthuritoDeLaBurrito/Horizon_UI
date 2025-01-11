@@ -7,6 +7,7 @@
     <Speedometer />
     <infoStaff />
     <Menu />
+    <Bank />
     <!--<LoadingScreen v-if="showLoadingScreen" />-->
     <!--<component :is="currentPage" :pageData="currentPageData" />-->
 
@@ -24,12 +25,13 @@
   import Example from './views/Example.vue';
   import LoadingScreen from './components/LoadingScreen.vue';
   import Notification from './components/Notification.vue';
-  import Hud from './components/Hud.vue';
+  import Hud from './components/interfaces/Hud.vue';
   import InfoMessage from './components/InfoMessage.vue';
   import AdvancedInventory from './components/AdvancedInventory.vue';
-  import Speedometer from './components/Speedometer.vue';
+  import Speedometer from './components/interfaces/Speedometer.vue';
   import infoStaff from './components/infoStaff.vue';
   import Menu from './components/Menu.vue';
+  import Bank from './components/interfaces/Bank.vue';
 
   // Pages disponibles
   const pages = {
@@ -41,6 +43,7 @@
     Speedometer,
     infoStaff,
     Menu,
+    Bank
   };
 
   // Notifications
@@ -94,7 +97,7 @@
       console.warn(`Page "${pageName}" introuvable.`);
     }
   }
-
+  
   // Fonction pour fermer la page (par exemple en appuyant sur Échap)
   function closeUI() {
     currentPage.value = null;
