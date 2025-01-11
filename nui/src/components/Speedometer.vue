@@ -59,7 +59,6 @@
     // Écoute des messages NUI pour mettre à jour le speedometer
     window.addEventListener("message", (event) => {
         if (event.data.type === "updateSpeedometer") {
-            console.log(event.data.isEmergency)
             speed.value = event.data.speed || 0;
             gear.value = event.data.gear || "N";
             fuel.value = event.data.fuel || 0; // Assure que le fuel est valide

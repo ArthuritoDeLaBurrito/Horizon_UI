@@ -1,168 +1,388 @@
 <template>
-    <div v-if = "visible" class="menu-container">
-      <h2 class="menu-title"> {{ title }}</h2>
-      <div class="menu-options">
-      <div v-for="(option, index) in options"  :key="index" class="menu-option" >
-        <label class="checkbox-button">
-          <input  type="checkbox"  v-model="options[index].checked"  class="hidden-input" />
-          <span class="styled-button">{{ option.label }}</span>
-        </label>
-      </div>
+  <div v-if="menuData !== null" :style="menuData?.style?.container" id="container">
+    <div v-if="menuData?.banner && menuData.banner.trim() !== ''" class="banner_container"  :style="{   backgroundImage: `url('${menuData.banner}')`, }" >
+      <h4>{{ menuData?.title }}</h4>
+      <h3>{{btnIndex + 1}} / {{menuData.btn.length}}</h3>
     </div>
-      <button class="menu-button" @click="sendOptionsToLua">
-        Valider les Options
-      </button>
-    </div>
+    <h1 :style="menuData?.style?.h1" v-if="menuData?.banner == null">{{ menuData?.title }}</h1>
+    <ul v-if="menuData?.btn && menuData.btn.length" :style="menuData?.style?.ul">
+      <template v-for="(menu, index) in visibleItems" :key="startIndex + index">
+        <div v-if="menu.type === 'button'">
+          <li
+              :class="{ active: (startIndex + index) === btnIndex }"
+              :style="(startIndex + index) !== btnIndex ? menuData?.style?.li : menuData?.style?.liActive"
+              @click="onButtonClick(menu)"
+              class="menu-item"
+            >
+              {{ menu?.name }}
+              <!-- Tooltip -->
+              <div v-if="menu.desc && (startIndex + index) === btnIndex" class="tooltip-bottom">
+                {{ menu.desc }}
+              </div>
+            </li>
+        </div>
+        <div v-if="menu.type === 'checkbox'">
+          <li
+          :class="{ active: (startIndex + index) === btnIndex }"
+          @click="toggleCheckbox(index)"
+          class="menu-item"
+        >
+          <label>
+            <input
+              type="checkbox"
+              v-model="menu.checked"
+              :tabindex="(startIndex + index) === btnIndex ? 0 : -1"
+            />
+            {{ menu.name }} 
+          </label>
+        </li>
+        </div>
+      </template>
+    </ul>
+  </div>
 </template>
-  
+
 <script setup>
-  import { ref, onMounted } from 'vue';
-  
-  const title = ref("menu"); // Titre du menu
-  const options = ref([
-  { label: "Activer la météo", value: "weather", checked: false },
-  { label: "Activer la météo", value: "weather", checked: false },
-  { label: "Activer la météo", value: "weather", checked: false },
-  { label: "Activer la météo", value: "weather", checked: false },
-  { label: "Activer la météo", value: "weather", checked: false },
-  { label: "Activer la météo", value: "weather", checked: false },
+  import { ref, onMounted, onBeforeUnmount, nextTick, computed} from "vue";
 
-]); // Liste des options
-  const visible = ref(true); // État de visibilité du menu
-
-  onMounted(() => {
-    window.addEventListener('message', (event) => {
-      if (event.data.type === 'openMenu') {
-        title.value = event.data.title; // Met à jour le titre
-        options.value = event.data.options; // Met à jour la liste des options
-        visible.value = true; // Affiche le menu
-        console.log("Menu affiché avec les options : ", options.value);
-      }
-    }); 
+  // Variables réactives
+  const tempData = ref([]);
+  const btnIndex = ref(0);
+  const menuData = ref({
+  style: {
+  },
+  title: "Menu Principal",
+  btn: [
+    { name: "Option 1", event: "event1", desc: "Description de l'option 1" },
+    { name: "Option 2", event: "event2" },
+    { name: "Option 3", event: "event3" },
+    { name: "Option 4", event: "event3" },
+    { name: "Option 5", event: "event3" },
+    { name: "Option 6", event: "event3" },
+    { name: "Option 7", event: "event3" },
+    { name: "Option 8", event: "event3" },
+    { name: "Option 9", event: "event3" },
+  ],
   });
-  // Liste des options (avec état initial "checked")
-  // Fonction pour envoyer les options à Lua
-  function sendOptionsToLua() {
-    // Envoie toute la liste des options avec leurs états
-    fetch(`https://${GetParentResourceName()}/returnMenu`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(options.value),
+  const startIndex = ref(0); // Index de départ des éléments visibles
+  const maxVisible = 7; // Nombre maximum d'éléments visibles en même temps
+
+  // Calcul dynamique des éléments visibles
+  const visibleItems = computed(() => {
+    if (!menuData.value?.btn) return [];
+    return menuData.value.btn.slice(startIndex.value, startIndex.value + maxVisible);
+  });
+
+
+  function toggleCheckbox(index) {
+    const menu = menuData.value.btn[startIndex.value + index];
+    console.log("Toggle checkbox :", menu.name);
+    menu.checked = !menu.checked;
+  }
+
+  // Gérer la navigation avec les flèches haut et bas
+  function navigateDown() {
+    // Vérifie si on est au dernier élément
+    if (btnIndex.value === menuData.value.btn.length - 1) {
+      btnIndex.value = 0; // Retourne au premier élément
+      startIndex.value = 0; // Réinitialise le défilement au début
+    } else {
+      btnIndex.value++;
+
+      // Ajuste le défilement si l'élément actif dépasse la fenêtre visible
+      if (btnIndex.value >= startIndex.value + maxVisible) {
+        startIndex.value++;
+      }
+    }
+  }
+
+  function navigateUp() {
+    // Vérifie si on est au premier élément
+    if (btnIndex.value === 0) {
+      btnIndex.value = menuData.value.btn.length - 1; // Va au dernier élément
+      startIndex.value = Math.max(0, menuData.value.btn.length - maxVisible); // Ajuste la fenêtre visible
+    } else {
+      btnIndex.value--;
+
+      // Ajuste le défilement si l'élément actif dépasse la fenêtre visible
+      if (btnIndex.value < startIndex.value) {
+        startIndex.value--;
+      }
+    }
+  }
+
+  function menuDown() {
+    if (btnIndex.value < menuData.value.btn.length - 1) {
+      btnIndex.value++;
+      updateActiveButton();
+    }
+  }
+
+  function arrowUp() {
+    if (btnIndex.value > 0) {
+      btnIndex.value--;
+      updateActiveButton();
+    }
+  }
+
+  function enter() {
+    const btnInfo = menuData.value.btn[btnIndex.value];
+    if (btnInfo.type === 'checkbox') {
+      btnInfo.checked = !btnInfo.checked;
+      return
+    }
+    if (btnInfo.event) {
+      sendEventToLua(btnInfo.event, btnInfo.arg || {});
+    }
+    if (btnInfo.subMenu) {
+      createMenu(btnInfo.subMenu, true);
+    }
+  }
+
+  function back() {
+    if (tempData.value.length <= 1) {
+      closeAll();
+    } else {
+      tempData.value.pop();
+      menuData.value = tempData.value[tempData.value.length - 1];
+      btnIndex.value = 0;
+      updateActiveButton();
+    }
+  }
+
+  function closeAll() {
+    menuData.value = null;
+    tempData.value = [];
+    btnIndex.value = 0;
+  }
+
+  // Utilitaires
+  function updateActiveButton() {
+    nextTick(() => {
+      const menuItems = document.querySelectorAll("#container ul li");
+      menuItems.forEach((el, idx) => {
+        el.classList.toggle("active", idx === btnIndex.value);
+      });
     });
-    console.log("Liste des options envoyée : ", options.value);
-    visible.value = false
+  };
+
+  function sendEventToLua(event, arg) {
+    // Envoie un événement vers Lua (par exemple, via NUI)
+    fetch(`http://${GetParentResourceName()}/callevent`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ event, arg }),
+    });
+  };
+
+  function createMenu(data, dynamic = false) {
+    if (!dynamic) {
+      tempData.value = [];
+    } else {
+      btnIndex.value = 0;
+      nextTick(() => updateActiveButton());
+    }
+    menuData.value = data;
+    tempData.value.push(data);
+  };
+
+  window.addEventListener('message', (event) => {
+    if (event.data.type === 'createMenu') {
+      console.log("Créer un menu :", event.data.menu);
+      createMenu(event.data.menu, event.data.dynamic);
+    } else if (event.data.type === 'keyPress') {
+      if (event.data.key === "ArrowDown") {
+        navigateDown()};
+      if (event.data.key === "ArrowUp") {
+        navigateUp()};
+      if (event.data.key === "Enter") enter();
+      if (event.data.key === "Backspace") back();
+    }
+  });
+
+  // Attachez/détachez les événements au montage et démontage
+  onMounted(() => {
+  });
+
+  onBeforeUnmount(() => {
+  });
+
+  function onButtonClick(menu) {
+    if (menu.event) {
+      sendEventToLua(menu.event);
+    }
+    console.log("Bouton cliqué :", menu.name);
   }
 </script>
-  
+
 <style scoped>
-  /* Conteneur principal du menu */
-  .menu-container {
-    position: fixed;
+  #container {
+    position: absolute;
+    width: 300px;
+    top: 160px;
+    left: 40px;
+    margin: 0 auto;
+    background: rgba(0, 0, 0, 0.709);
+    border-radius: 10px;
+    padding: 20px;
+    animation: fade-in-out 3s ease forwards;
+    transition: bottom 0.3s ease-in-out; /* Transition fluide pour les déplacements */
+  }
+  
+  .banner_container {
+    background-image: url('https://s3.amazonaws.com/codecademy-content/courses/freelance-1/unit-2/pattern.jpeg');
+    position: relative;
+    height: 120px;
+    width: 280px;
+    right: 10px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  h4 {
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 400px; /* Largeur fixe */
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden; /* Coupe les débordements */
-    height: 400px; 
-}
-  
-  /* Titre du menu */
-  .menu-title {
     font-size: 20px;
-    margin-bottom: 20px; /* Ajoute un espace de 20px sous le titre */
-    text-align: center;
-    border-bottom: 1px solid rgba(58, 217, 151, 0.9);
-    padding-bottom: 10px;
-  }
-  
-  /* Conteneur des options */
-  .menu-options {
-    display: grid; /* Utilise une grille */
-    grid-template-columns: repeat(2, 1fr); /* Deux colonnes */
-    gap: 20px; /* Espace entre les options */
-    height: 300px; /* Limite maximale de hauteur du menu */
-    overflow-y: auto; /* Active le scroll uniquement si nécessaire */
-    padding-top: 10px; /* Ajoute un espace à droite pour la scroll bar */
-    padding-right: 10px; /* Ajoute un espace à droite pour la scroll bar */
-    justify-items: center; /* Centre horizontalement les options */
-}
-
-  .menu-options::-webkit-scrollbar {
-      display: none; /* Pour Chrome, Safari, et Edge */
-  }
-
-  /* Masque le champ input d'origine */
-  .hidden-input {
-    display: none;
-  }
-
-  /* Conteneur du bouton stylisé */
-  .checkbox-button {
-    display: inline-block;
-    margin: 5px 0;
-    cursor: pointer;
-  }
-
-  /* Bouton stylisé */
-  .styled-button {
-    width: 150px; /* Fixe une largeur uniforme pour les boutons */
-    text-align: center;
-    padding: 10px;
-    font-size: 14px;
     font-weight: bold;
     color: white;
-    background-color: rgba(0, 0, 255, 0.7);
-    border: 2px solid rgba(0, 0, 255, 0.9);
-    border-radius: 8px;
+    text-align: center;
+    text-shadow: 8px 8px 20px rgb(0, 0, 0);
+    
+  }
+
+  .menu-item {
+    margin: 10px 0;
     cursor: pointer;
-    transition: all 0.3s ease;
   }
 
-  /* Apparence au survol */
-  .checkbox-button:hover .styled-button {
-    background-color: rgba(0, 0, 255, 0.9);
-  }
-
-  /* Apparence activée (cochée) */
-  .hidden-input:checked + .styled-button {
-    background-color: rgba(0, 255, 0, 0.7); /* Fond vert lorsqu'il est coché */
-    border-color: rgba(0, 255, 0, 0.9);
+  .menu-item.active {
     color: white;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-  }
-
-  /* Apparence désactivée (non cochée) */
-  .hidden-input:not(:checked) + .styled-button {
-    background-color: rgba(255, 255, 255, 0.022); /* Fond rouge lorsqu'il est décoché */
-    border-color: rgba(255, 255, 255, 0.254);
-  }
-  /* Bouton de validation */
-  .menu-button { 
-    position: absolute;
-    background: rgba(37, 37, 40, 0.7);
-    color: white;
-    border: none;
     padding: 10px;
-    font-size: 16px;
-    border-radius: 4px;
-    width: 300px; /* Largeur fixe */
-    bottom: 10px;
+    border-radius: 5px;
+  }
+
+  .tooltip-bottom {
+    position: absolute;
+    bottom: -40px; /* Position juste en bas du menu */
     left: 50%; /* Centré horizontalement */
     transform: translateX(-50%);
-    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+    font-size: 14px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 10;
     text-align: center;
+    min-width: 80%;
     transition: background 0.3s ease;
   }
-  
-  .menu-button:hover {
-    background: rgba(58, 217, 151, 0.9);
+
+  .tooltip-bottom::after {
+    content: '';
+    position: absolute;
+    top: -10px; /* Pointe de la flèche */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 10px;
+    border-style: solid;
+    border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
   }
+
+  @keyframes fade-in-out {
+    0% {
+      opacity: 0;
+      transform: translate(0%, -140%);
+    }
+    10% {
+      opacity: 1;
+      transform: translate(0%,-140%);
+    }
+  }
+
+  h1 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+  }
+
+  h2 {
+    margin-bottom: 18px;
+    font-size: 14px;
+    text-align: left;
+    color: white;
+  }
+
+  h3 {
+    position: absolute;
+    font-size: 12px;
+    color: white;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    
+    overflow-y: auto; /* Permet le scroll vertical */
+    scrollbar-width: thin; /* Scroll bar discrète (Firefox) */
+  }
+
+  li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: rgba(128, 128, 128, 0.212);
+    color: rgb(255, 255, 255);
+    text-align: left;
+    border-radius: 5px;
+    border-color: rgba(0, 0, 0, 0.486);
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  li.active {
+    border-left: 5px #4797ff solid;
+    text-shadow: rgb(255, 255, 255) 1px 0 5px;
+  }
+
+  li:hover {
+    background: lightgray;
+  }
+    
+  @keyframes fade-in-out {
+    0% {
+      opacity: 0;
+      transform: translateX(-50%);
+    }
+    10% {
+      opacity: 1;
+      transform: translateX(0%);
+    }
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+  }
+
+  input[type="checkbox"] {
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
 </style>
-  

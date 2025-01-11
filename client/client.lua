@@ -62,12 +62,11 @@ function ShutdownLoadingScreenUI()
 end
 
 RegisterCommand("t", function()
-    local inventoryVisible = not inventoryVisible
    --[[ SendNUIMessage({
         type = "toggleInventory",
         visible = inventoryVisible
     })]]
-    SetNuiFocus(inventoryVisible, inventoryVisible)
+    SetNuiFocus(false, false)
 end, false)
 
 
