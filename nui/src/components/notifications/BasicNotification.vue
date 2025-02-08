@@ -37,13 +37,17 @@ const queue = ref([]); // File d'attente des notifications
 
 // Écoute les messages NUI pour afficher les notifications
 window.addEventListener('message', (event) => {
-  if (event.data.type === 'showNotification') {
+  newNotification(event.data);
+});
+
+function newNotification(data) {
+  if (data.type === 'showNotification') {
     const newNotification = {
-      title: event.data.title || "Titre par défaut",
-      subtitle: event.data.subtitle || "",
-      description: event.data.description || "",
-      logo: event.data.logo || null, // Chemin ou URL du logo
-      duration: event.data.duration || 3000, // Durée par défaut : 3 secondes
+      title: data.title || "Titre par défaut",
+      subtitle: data.subtitle || "",
+      description: data.description || "",
+      logo: data.logo || null, // Chemin ou URL du logo
+      duration: data.duration || 3000, // Durée par défaut : 3 secondes
       count: 1, // Compteur d'occurrences
     };
 
@@ -66,8 +70,7 @@ window.addEventListener('message', (event) => {
       queue.value.push(newNotification);
     }
   }
-});
-
+}
 // Afficher une notification
 function displayNotification(notification) {
   activeNotifications.value.push(notification);

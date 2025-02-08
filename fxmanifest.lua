@@ -14,6 +14,7 @@ description 'UI From Horizon'
 
 client_scripts {
     'client/*.lua',
+    'client/**/*.lua',
 }
 
 --

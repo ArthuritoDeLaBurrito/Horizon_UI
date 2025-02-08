@@ -1,13 +1,18 @@
 <template>
   <div id="app">
     <Hud />
-    <InfoMessage />
-    <Notification />
+    
+    <BasicNotification />
+    <HelpNotification />
+    <InfoNotification />
+
     <AdvancedInventory />
     <Speedometer />
     <infoStaff />
     <Menu />
     <Bank />
+    <menu_listButton />
+    <admin_Main />
     <!--<LoadingScreen v-if="showLoadingScreen" />-->
     <!--<component :is="currentPage" :pageData="currentPageData" />-->
 
@@ -24,26 +29,39 @@
   import Home from './views/Home.vue';
   import Example from './views/Example.vue';
   import LoadingScreen from './components/LoadingScreen.vue';
-  import Notification from './components/Notification.vue';
   import Hud from './components/interfaces/Hud.vue';
-  import InfoMessage from './components/InfoMessage.vue';
   import AdvancedInventory from './components/AdvancedInventory.vue';
   import Speedometer from './components/interfaces/Speedometer.vue';
   import infoStaff from './components/infoStaff.vue';
-  import Menu from './components/Menu.vue';
+  import Menu from './components/menu/Menu.vue';
   import Bank from './components/interfaces/Bank.vue';
+  import menu_listButton from './components/menu/listButton.vue';
+
+  // Administration
+  import admin_Main from './components/interfaces/Administration/Main.vue';
+
+  // Notifications
+  import BasicNotification from './components/notifications/BasicNotification.vue';
+  import HelpNotification from './components/notifications/HelpNotification.vue';
+  import InfoNotification from './components/notifications/InfoNotification.vue';
 
   // Pages disponibles
   const pages = {
     Home,
     Example,
     LoadingScreen,
-    Notification,
     AdvancedInventory,
     Speedometer,
     infoStaff,
     Menu,
-    Bank
+    Bank,
+    menu_listButton,
+
+    admin_Main,
+
+    BasicNotification,
+    HelpNotification, 
+    InfoNotification,
   };
 
   // Notifications
@@ -146,7 +164,6 @@
       } else if (event.data.type === 'openUI') {
         openUI(event.data.page);
       } else if (event.data.type === 'hideLoadingScreen') {
-        console.log("jesuisla")
         showLoadingScreen.value = false; // Masquer l'écran de chargement
     }
     });

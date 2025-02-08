@@ -4,3 +4,5 @@ function showInfoMessage(_message)
         message = _message
     })
 end
+
+exports('showInfoMessage', showInfoMessage)

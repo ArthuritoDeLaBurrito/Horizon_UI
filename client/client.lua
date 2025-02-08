@@ -27,9 +27,9 @@ end)
 function sendNotification(title, subtitle, description, logo, duration)
     SendNUIMessage({
         type = "showNotification",
-        title = title or "Titre par défaut",
-        subtitle = subtitle or "Sous-titre par défaut",
-        description = description or "Ceci est une description par défaut.",
+        title = title or " ",
+        subtitle = subtitle or " ",
+        description = description or "",
         logo = logo or "../src/assets/img/logo_96x96.png", -- URL ou chemin local pour le logo
         duration = duration or 3000 -- Durée par défaut : 3 secondes
     })
