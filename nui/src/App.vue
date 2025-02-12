@@ -9,10 +9,11 @@
     <AdvancedInventory />
     <Speedometer />
     <infoStaff />
-    <Menu />
     <Bank />
     <menu_listButton />
     <admin_Main />
+
+    <Player_Hud />
     <!--<LoadingScreen v-if="showLoadingScreen" />-->
     <!--<component :is="currentPage" :pageData="currentPageData" />-->
 
@@ -29,7 +30,6 @@
   import Home from './views/Home.vue';
   import Example from './views/Example.vue';
   import LoadingScreen from './components/LoadingScreen.vue';
-  import Hud from './components/interfaces/Hud.vue';
   import AdvancedInventory from './components/AdvancedInventory.vue';
   import Speedometer from './components/interfaces/Speedometer.vue';
   import infoStaff from './components/infoStaff.vue';
@@ -45,6 +45,11 @@
   import HelpNotification from './components/notifications/HelpNotification.vue';
   import InfoNotification from './components/notifications/InfoNotification.vue';
 
+  // Player
+
+  import Player_Hud from './components/interfaces/player/Hud.vue';
+
+
   // Pages disponibles
   const pages = {
     Home,
@@ -53,7 +58,6 @@
     AdvancedInventory,
     Speedometer,
     infoStaff,
-    Menu,
     Bank,
     menu_listButton,
 
@@ -62,6 +66,8 @@
     BasicNotification,
     HelpNotification, 
     InfoNotification,
+
+    Player_Hud,
   };
 
   // Notifications
