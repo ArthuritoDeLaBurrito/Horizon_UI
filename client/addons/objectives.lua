@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global, lowercase-global
 RegisterCommand("showObjectives", function()
     SendNUIMessage({
         type = "showObjectives",
@@ -19,12 +20,19 @@ end)
 
 local _objectives = {}
 function addObjectives(objective)
-    exports["horizon"]:normalizeString(objective)
-
+    local objectiveName = exports["horizon"]:normalizeString(objective)
+    if _objectives[objectiveName] == nil then
+        _objectives[objectiveName] = { text = objective, completed = false }
+        exports["horizon"]:notificationBasic("Nouvel objectif : \n~b~" .. objective)
+        _title = "Objectif(s) en cours"
+        SendNUIMessage({
+            type = "showObjectives",
+            objectives = _objectives,
+            title = _title,
+        })
+    end
 end
-exports("addObjective", function(objective)
-    addObjectives(objective)
-end)
+exports("addObjective", addObjective)
 
 local _title = "Aucun Objectif en cours"
 function toggleObjectives(objective)
@@ -44,10 +52,6 @@ function toggleObjectives(objective)
             _objectives = {}
             _title = "Aucun Objectif en cours"
         end
-    else
-        _objectives[objectiveName] = { text = objective, completed = false }
-        exports["horizon"]:notificationBasic("Nouvel objectif : \n~b~" .. objective)
-        _title = "Objectif(s) en cours"
     end
     SendNUIMessage({
         type = "showObjectives",
