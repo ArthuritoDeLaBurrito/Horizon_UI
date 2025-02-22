@@ -1,193 +1,116 @@
 <template>
-  <div>
-    <!-- Afficher les notifications empilées -->
-    <div
-      v-for="(notification, index) in activeNotifications"
-      :key="index"
-      class="notification"
-      :style="{ bottom: `${220 + index * 120}px` }"
-    >
-      <!-- Logo -->
-      <img v-if="notification.logo" :src="notification.logo" alt="Notification Logo" class="logo" />
-      <!-- Contenu texte -->
-      <div class="notification-content">
-        <h4 class="title">{{ notification.title }}</h4>
-        <p class="subtitle">{{ notification.subtitle }}</p>
-        <p class="description">{{ notification.description }}</p>
-      </div>
-      <!-- Pastille pour le nombre d'occurrences -->
-      <div v-if="notification.count > 1" class="badge">
-        x{{ notification.count }}
-      </div>
-    </div>
-
-    <!-- Afficher un indicateur de file d'attente -->
-    <div v-if="queue.length > 0" class="queue-indicator">
-      +{{ queue.length }} en attente
-    </div>
+  <div ref="container" id="container">
+    <ul id="notif-container">
+      <transition name="fade" v-for="(notif, index) in notificationList" :key="index" @after-leave="afterLeave(index)">
+        <li class="notification" v-if="notif.show">
+          <div>
+            <img style="width:2.5em;" v-if="notif.img !== undefined" :src="require('../../assets/img/' + notif.img)" />
+            <h4 v-if="notif.title !== undefined" id="title">{{ notif.title }}</h4>
+            <hr v-if="notif.title !== undefined">
+            <p>{{ notif.msg }}</p>
+          </div>
+        </li>
+      </transition>
+    </ul>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 
-const maxNotifications = 3; // Nombre maximum de notifications visibles
-const activeNotifications = ref([]); // Notifications visibles
-const queue = ref([]); // File d'attente des notifications
+const notificationList = ref([]);
+const maxNotif = 5;
+const count = ref(0);
 
-// Écoute les messages NUI pour afficher les notifications
-window.addEventListener('message', (event) => {
-  newNotification(event.data);
-});
+// Fonction pour créer une notification
+function createNotification(notif) {
+  notif.show = false;
+  notificationList.value.push(notif);
+  count.value++;
 
-function newNotification(data) {
-  if (data.type === 'showNotification') {
-    const newNotification = {
-      title: data.title || "Titre par défaut",
-      subtitle: data.subtitle || "",
-      description: data.description || "",
-      logo: data.logo || null, // Chemin ou URL du logo
-      duration: data.duration || 3000, // Durée par défaut : 3 secondes
-      count: 1, // Compteur d'occurrences
-    };
-
-    // Vérifie si une notification avec le même contenu existe déjà
-    const existingNotification = activeNotifications.value.find(
-      (notif) =>
-        notif.title === newNotification.title &&
-        notif.subtitle === newNotification.subtitle &&
-        notif.description === newNotification.description
-    );
-
-    if (existingNotification) {
-      // Incrémente le compteur de la notification existante
-      existingNotification.count++;
-    } else if (activeNotifications.value.length < maxNotifications) {
-      // Ajoute une nouvelle notification si moins de 3 affichées
-      displayNotification(newNotification);
-    } else {
-      // Ajoute à la file d'attente si le maximum est atteint
-      queue.value.push(newNotification);
-    }
-  }
-}
-// Afficher une notification
-function displayNotification(notification) {
-  activeNotifications.value.push(notification);
-
-  // Retirer la notification après la durée spécifiée
   setTimeout(() => {
-    const index = activeNotifications.value.indexOf(notification);
-    if (index !== -1) {
-      activeNotifications.value.splice(index, 1); // Supprime la notification
-      if (queue.value.length > 0) {
-        // Affiche la notification suivante de la file d'attente
-        const nextNotification = queue.value.shift();
-        displayNotification(nextNotification);
-      }
-    }
-  }, notification.duration);
+    notif.show = true;
+
+    setTimeout(() => {
+      notif.show = false;
+    }, 5010);
+  }, 10);
 }
+
+// Fonction appelée après la disparition d'une notification
+function afterLeave(index) {
+  notificationList.value.splice(index, 1);
+}
+
+// Écoute les événements pour créer des notifications
+window.addEventListener('message', (event) => {
+  if (event.data.type === 'basicNotification') {
+    createNotification({
+      img: event.data.logo,
+      title: event.data.title,
+      msg: event.data.description,
+      show: false,
+    });
+  }
+});
 </script>
 
 <style scoped>
-.notification {
-  position: fixed; /* Permet un positionnement relatif à l'écran */
-  left: 20px; /* Position fixe à gauche */
-  background: rgba(0, 0, 0, 0.267); /* Couleur de fond semi-transparente */
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  z-index: 1000;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.13);
-  width: 300px; /* Largeur fixe pour un alignement cohérent */
-  animation: fade-in-out 3s ease forwards;
-  transition: bottom 0.3s ease-in-out; /* Transition fluide pour les déplacements */
-  display: flex;
-  align-items: flex-start;
-  gap: 10px; /* Espacement entre le logo et le contenu */
+.fade-enter-active {
+  animation: slide-in .7s; /* Animation d'entrée */
+}
+.fade-leave-active {
+  animation: slide-out .7s; /* Animation de sortie */
 }
 
-/* Logo de la notification */
-.logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-/* Contenu texte */
-.notification-content {
-  flex: 1;
-}
-
-.title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 14px;
-  color: #b3b3b3; /* Couleur gris clair pour le sous-titre */
-}
-
-.description {
-  margin: 5px 0 0 0;
-  font-size: 12px;
-  color: #e0e0e0; /* Couleur gris clair pour la description */
-}
-
-/* Pastille pour le nombre d'occurrences */
-.badge {
+#notif-container {
+  font-family: Montserrat;
+  list-style-type: none;
   position: absolute;
-  top: -5px;
-  right: -5px;
-  background: red;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+  right: 1em;
+  width: 13em;
+  bottom: 2em;
+  overflow: hidden;
+  padding-bottom: 0.3em;
 }
 
-/* Indicateur de file d'attente */
-.queue-indicator {
-  position: fixed;
-  bottom: calc(20px + 360px); /* Ajusté pour être au-dessus des notifications */
-  left: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  padding: 5px 15px;
-  border-radius: 8px;
-  font-size: 14px;
-  z-index: 1000;
-  text-align: center;
+.notification {
+  margin-top: 0.4em;
+  color: #fff;
+  position: relative;
+  top: 0.2em;
+  width: 100%;
+  font-family: 'Montserrat';
 }
 
-@keyframes fade-in-out {
-  0% {
-    opacity: 0;
-    transform: translateY(20%);
-  }
-  10% {
-    opacity: 1;
-    transform: translateY(0%);
-  }
-  90% {
-    opacity: 1;
-    transform: translateY(0%);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(20%);
-  }
+#notif-container li {
+  background-color: black;
+  width: 100%;
+  border-radius: 10px;
+  position: relative;
+}
+
+li h4 {
+  margin: 0em;
+  padding: 0.4em;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+li img {
+  display: inline-block;
+  vertical-align: middle;
+  padding: 0.4em;
+  margin: 0em;
+}
+
+li hr {
+  padding: 0em;
+  margin: 0em;
+}
+
+p {
+  padding: 0.4em;
+  margin: 0em;
 }
 </style>

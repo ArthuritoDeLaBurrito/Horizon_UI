@@ -32,6 +32,7 @@
         <p><strong>Vitesse :</strong> {{ speed }} KM/H</p>
         <p><strong>Rapport :</strong> {{ gear }}</p>
         <p><strong>Carburant :</strong> {{ fuel }}%</p>
+        <p v-if="isEmergency"><strong>Mode Urgence</strong></p>
       </div>
     </div>
   </template>
@@ -73,9 +74,9 @@
         }
     });
     const fuelColor = computed(() => {
-        if (fuel.value > 50) return "green";
+        if (fuel.value > 50) return "orange";
         if (fuel.value > 25) return "orange";
-        return "red";
+        return "orange";
     });
     function toggleInfo() {
         showInfo.value = !showInfo.value;
@@ -107,9 +108,8 @@
   /* Conteneur principal du speedometer */
     .speedometer {
         position: fixed;
-        bottom: 30px; /* Position en bas */
-        left: 50%; /* Centré horizontalement */
-        transform: translateX(-50%);
+        bottom: 5%; /* Position en bas */
+        right: 0.5%; /* Centré horizontalement */
         width: 200px;
         height: 200px;
         display: flex;
@@ -138,7 +138,6 @@
         width: 150px;
         height: 150px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.9));
         z-index: 10; /* Place le speedometer devant la barre circulaire */
     }
 
@@ -167,7 +166,7 @@
     .info-bubble {
         position: absolute;
         top: 50%;
-        left: 90%; /* Décalé à droite du speedometer */
+        right: 90%; /* Décalé à droite du speedometer */
         transform: translateY(-50%);
         width: 200px;
         background: rgba(0, 0, 0, 0.566);

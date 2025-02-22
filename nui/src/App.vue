@@ -14,6 +14,7 @@
     <admin_Main />
 
     <Player_Hud />
+    <Objectives />
     <!--<LoadingScreen v-if="showLoadingScreen" />-->
     <!--<component :is="currentPage" :pageData="currentPageData" />-->
 
@@ -32,6 +33,7 @@
   import LoadingScreen from './components/LoadingScreen.vue';
   import AdvancedInventory from './components/AdvancedInventory.vue';
   import Speedometer from './components/interfaces/Speedometer.vue';
+  import Objectives from './components/interfaces/Objectives.vue';
   import infoStaff from './components/infoStaff.vue';
   import Menu from './components/menu/Menu.vue';
   import Bank from './components/interfaces/Bank.vue';
@@ -57,6 +59,7 @@
     LoadingScreen,
     AdvancedInventory,
     Speedometer,
+    Objectives,
     infoStaff,
     Bank,
     menu_listButton,
@@ -66,6 +69,8 @@
     BasicNotification,
     HelpNotification, 
     InfoNotification,
+    
+    Menu,
 
     Player_Hud,
   };
