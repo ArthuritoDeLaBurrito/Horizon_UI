@@ -15,6 +15,7 @@
 
     <Player_Hud />
     <Objectives />
+    <sodaMachineProximity />
     <!--<LoadingScreen v-if="showLoadingScreen" />-->
     <!--<component :is="currentPage" :pageData="currentPageData" />-->
 
@@ -36,6 +37,7 @@
   import Objectives from './components/interfaces/Objectives.vue';
   import infoStaff from './components/infoStaff.vue';
   import Menu from './components/menu/Menu.vue';
+  import sodaMachineProximity from './components/interfaces/sodaMachineProximity.vue';
   import Bank from './components/interfaces/Bank.vue';
   import menu_listButton from './components/menu/listButton.vue';
 
@@ -62,6 +64,7 @@
     Objectives,
     infoStaff,
     Bank,
+    sodaMachineProximity,
     menu_listButton,
 
     admin_Main,

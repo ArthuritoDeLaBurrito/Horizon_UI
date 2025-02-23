@@ -18,6 +18,7 @@ RegisterNUICallback("completeObjective", function(data, cb)
     cb("ok")
 end)
 
+local _title = "Aucun Objectif en cours"
 local _objectives = {}
 function addObjectives(objective)
     local objectiveName = exports["horizon"]:normalizeString(objective)
@@ -32,9 +33,8 @@ function addObjectives(objective)
         })
     end
 end
-exports("addObjective", addObjective)
+exports("addObjectives", addObjectives)
 
-local _title = "Aucun Objectif en cours"
 function toggleObjectives(objective)
     local objectiveName = exports["horizon"]:normalizeString(objective)
     if _objectives[objectiveName] then
@@ -47,17 +47,18 @@ function toggleObjectives(objective)
                 break
             end
         end
-        if allCompleted then
+        if (allCompleted) then
             exports["horizon"]:notificationBasic("~g~Tous les objectifs ont été complétés !")
             _objectives = {}
             _title = "Aucun Objectif en cours"
+            -- Récompense ! 
         end
+        SendNUIMessage({
+            type = "showObjectives",
+            objectives = _objectives,
+            title = _title,
+        })
     end
-    SendNUIMessage({
-        type = "showObjectives",
-        objectives = _objectives,
-        title = _title,
-    })
 end
 exports('toggleObjectives', toggleObjectives)
 
