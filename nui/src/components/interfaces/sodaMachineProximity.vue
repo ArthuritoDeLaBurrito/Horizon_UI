@@ -15,8 +15,6 @@ const dispenserStatus = ref("green");
 
 onMounted(() => {
     window.addEventListener("message", (event) => {
-        console.log("NUI Message reçu:", event.data);
-
         if (event.data.type === "showDispenser") {
             dispenserStatus.value = "green"; // 🟢 Distributeur actif
             dispenserVisible.value = true;
